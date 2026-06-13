@@ -1,0 +1,6 @@
+-keep class com.selzxrat.v5.** { *; }
+-keepclassmembers class com.selzxrat.v5.** { *; }
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
+-keepattributes Signature
+-keepattributes *Annotation*
