@@ -1,0 +1,27 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+// 1. Trik Penulisan SDK (Menjaga agar bot selalu tahu lokasi SDK)
+try {
+    def lp = new File(settingsDir, "local.properties")
+    lp.text = "sdk.dir=/root/Android/Sdk\n"
+} catch (Exception e) {}
+
+// 2. Manajemen Dependensi (Wajib ada biar gak error 'plugin not found' lagi)
+dependencyResolutionManagement {
+    // PREFER_PROJECT lebih aman daripada FAIL_ON_PROJECT_REPOS untuk server bot
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' } // Tambahkan ini biar library pihak ke-3 kebaca
+    }
+}
+
+rootProject.name = "SELZXRAT-Controller"
+include ':app'
