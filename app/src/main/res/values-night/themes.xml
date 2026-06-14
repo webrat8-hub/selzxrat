@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SELZXRAT" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF69B4</item>
+        <item name="colorPrimaryVariant">#FFB6C1</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">#FFD1DC</item>
+        <item name="android:statusBarColor">#1A1A2E</item>
+        <item name="android:navigationBarColor">#1A1A2E</item>
+        <item name="android:windowBackground">#1A1A2E</item>
+        <item name="colorSurface">#16213E</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+    </style>
+</resources>
