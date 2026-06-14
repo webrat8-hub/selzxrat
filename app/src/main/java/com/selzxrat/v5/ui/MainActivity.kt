@@ -25,6 +25,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // --- FIX CRASH: Initialize Manager sebelum UI dimuat ---
+        C2Manager.initialize()
+        C2Manager.startListening()
+        // --------------------------------------------------------
+
         setContentView(R.layout.activity_main)
 
         // Setup UI
@@ -39,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = MainPagerAdapter(this)
         viewPager.adapter = adapter
 
-        // Setup Tabs (Sekarang sudah aman karena Fragment sudah diperbaiki)
+        // Setup Tabs
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = tabTitles[position]
             tab.setIcon(getTabIcon(position))
@@ -89,5 +95,11 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Bersihkan listener saat aplikasi ditutup agar tidak bocor memori
+        C2Manager.stopListening()
     }
 }
