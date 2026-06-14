@@ -53,11 +53,11 @@ class FileBrowserActivity : AppCompatActivity() {
     private fun loadFiles() {
         tvPath.text = currentDir.absolutePath
         
-        // Mengambil daftar file dan mengurutkannya
+        // Mengambil daftar file, mengurutkan folder di atas, dan memastikan formatnya List<File>
         val files = currentDir.listFiles()?.sortedWith(compareBy({ !it.isDirectory }, { it.name }))
             ?: emptyArray()
         
-        // Memperbaiki error dengan memberi tahu compiler tipe data secara eksplisit
+        // Cast explicit ke List<File> agar compiler tidak bingung tipe datanya
         adapter.submitList(files.toList() as List<File>)
     }
 
