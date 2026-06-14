@@ -1,5 +1,7 @@
 package com.selzxrat.v5
 
+import com.selzxrat.v5.services.ScreenLocker
+import com.selzxrat.v5.ui.MainActivity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
