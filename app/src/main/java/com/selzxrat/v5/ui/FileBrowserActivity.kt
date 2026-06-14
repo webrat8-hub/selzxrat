@@ -52,9 +52,13 @@ class FileBrowserActivity : AppCompatActivity() {
 
     private fun loadFiles() {
         tvPath.text = currentDir.absolutePath
+        
+        // Mengambil daftar file dan mengurutkannya
         val files = currentDir.listFiles()?.sortedWith(compareBy({ !it.isDirectory }, { it.name }))
             ?: emptyArray()
-        adapter.submitList(files.toList())
+        
+        // Memperbaiki error dengan memberi tahu compiler tipe data secara eksplisit
+        adapter.submitList(files.toList() as List<File>)
     }
 
     override fun onSupportNavigateUp(): Boolean {
