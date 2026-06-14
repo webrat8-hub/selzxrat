@@ -22,6 +22,9 @@ class FileBrowserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_file_browser)
 
+        supportActionBar?.title = "File Browser"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         recyclerView = findViewById(R.id.recyclerFiles)
         tvPath = findViewById(R.id.tvCurrentPath)
         btnBack = findViewById(R.id.btnGoBack)
@@ -46,21 +49,22 @@ class FileBrowserActivity : AppCompatActivity() {
         loadFiles()
     }
 
-      private fun loadFiles() {
+    private fun loadFiles() {
         tvPath.text = currentDir.absolutePath
         
-        // Mengambil daftar file dari folder
         val filesArray = currentDir.listFiles()
-        
-        // Menyiapkan daftar yang pasti bertipe List<File>
         val fileList: MutableList<File> = mutableListOf()
         
         if (filesArray != null) {
-            // Mengurutkan folder di atas dan file sesuai abjad
             val sortedList = filesArray.sortedWith(compareBy({ !it.isDirectory }, { it.name }))
             fileList.addAll(sortedList)
         }
         
-        // Memberikan data ke adapter
         adapter.submitList(fileList.toList())
     }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+}
