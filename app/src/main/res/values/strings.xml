@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SELZXRAT v5</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="bots">Bots</string>
+    <string name="commands">Commands</string>
+    <string name="exfiltrated">Exfiltrated</string>
+    <string name="terminal">Terminal</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+</resources>
