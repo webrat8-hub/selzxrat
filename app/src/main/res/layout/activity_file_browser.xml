@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFF5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FF69B4"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/btnGoBack"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="← Back"
+            android:backgroundTint="#FFD1DC"
+            android:textColor="#FF69B4"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:id="@+id/tvCurrentPath"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="/storage/emulated/0"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            android:gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:maxLines="1"
+            android:ellipsize="middle" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerFiles"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="4dp" />
+
+</LinearLayout>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Device Information"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FF69B4" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/white"
+            android:padding="12dp"
+            android:elevation="2dp">
+
+            <TextView android:id="@+id/tvDeviceName" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Name: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvDeviceModel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Model: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvAndroidVersion" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Android: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvManufacturer" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Manufacturer: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvBattery" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Battery: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvIP" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="IP: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvCountry" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Country: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvRAM" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="RAM: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvStorage" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Storage: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvSimInfo" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="SIM: --" android:padding="4dp" />
+            <TextView android:id="@+id/tvLastSeen" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Last Seen: --" android:padding="4dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Commands"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FF69B4"
+            android:layout_marginTop="20dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp">
+
+            <Button android:id="@+id/btnGetInfo" android:layout_width="match_parent" android:layout_height="48dp" android:text="Get Device Info" android:backgroundTint="#FF69B4" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnGetContacts" android:layout_width="match_parent" android:layout_height="48dp" android:text="Get Contacts" android:backgroundTint="#FFB6C1" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnGetSMS" android:layout_width="match_parent" android:layout_height="48dp" android:text="Get SMS" android:backgroundTint="#FFB6C1" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnGetCallLogs" android:layout_width="match_parent" android:layout_height="48dp" android:text="Get Call Logs" android:backgroundTint="#FFB6C1" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnGetLocation" android:layout_width="match_parent" android:layout_height="48dp" android:text="Get Location" android:backgroundTint="#FFB6C1" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnLockScreen" android:layout_width="match_parent" android:layout_height="48dp" android:text="Lock Screen" android:backgroundTint="#FF69B4" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnUnlockScreen" android:layout_width="match_parent" android:layout_height="48dp" android:text="Unlock Screen" android:backgroundTint="#FF69B4" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnOpenURL" android:layout_width="match_parent" android:layout_height="48dp" android:text="Open URL" android:backgroundTint="#FFB6C1" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnSendSMS" android:layout_width="match_parent" android:layout_height="48dp" android:text="Send SMS" android:backgroundTint="#FFB6C1" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnShellExec" android:layout_width="match_parent" android:layout_height="48dp" android:text="Shell Exec" android:backgroundTint="#FF69B4" android:textColor="@android:color/white" android:textAllCaps="false" android:layout_marginBottom="4dp" />
+            <Button android:id="@+id/btnSelfDestruct" android:layout_width="match_parent" android:layout_height="48dp" android:text="SELF DESTRUCT" android:backgroundTint="#FF4444" android:textColor="@android:color/white" android:textAllCaps="true" android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

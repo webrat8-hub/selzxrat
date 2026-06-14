@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1A1A2E">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/tvTerminalOutput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SELZXRAT Terminal v5.0\n> Ready\n\n"
+            android:textColor="#00FF88"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:lineSpacingExtra="2dp" />
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#16213E"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/etTerminalInput"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint=">_"
+            android:textColor="#00FF88"
+            android:textColorHint="#444444"
+            android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:fontFamily="monospace" />
+
+        <Button
+            android:id="@+id/btnTerminalSend"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="RUN"
+            android:backgroundTint="#FF69B4"
+            android:textColor="@android:color/white"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+</LinearLayout>

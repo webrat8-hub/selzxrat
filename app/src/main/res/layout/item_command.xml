@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cvCommand"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCmdType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GET_INFO"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FF69B4" />
+
+            <TextView
+                android:id="@+id/tvCmdPayload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(no payload)"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tvCmdStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="pending"
+                android:textSize="12sp"
+                android:textColor="#FFB6C1" />
+
+            <TextView
+                android:id="@+id/tvCmdTimestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="--:--:--"
+                android:textSize="11sp"
+                android:textColor="#AAAAAA"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
