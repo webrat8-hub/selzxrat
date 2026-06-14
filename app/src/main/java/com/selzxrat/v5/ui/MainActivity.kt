@@ -39,7 +39,8 @@ class MainActivity : AppCompatActivity() {
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = tabTitles[position]
-            tab.icon = getTabIcon(position)
+            // DIPERBAIKI: Menggunakan setIcon() karena menerima parameter Int
+            tab.setIcon(getTabIcon(position))
         }.attach()
 
         // Handle alert dialog from command
