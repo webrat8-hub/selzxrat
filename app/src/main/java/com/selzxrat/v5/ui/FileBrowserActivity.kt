@@ -46,13 +46,21 @@ class FileBrowserActivity : AppCompatActivity() {
         loadFiles()
     }
 
-    private fun loadFiles() {
+      private fun loadFiles() {
         tvPath.text = currentDir.absolutePath
-        val files = currentDir.listFiles()?.sortedWith(compareBy({ !it.isDirectory }, { it.name }))
-            ?: emptyArray()
         
-        // Memaksa konversi ke List yang dikenali adapter
-        val fileList = files.toList()
-        adapter.submitList(fileList)
+        // Mengambil daftar file dari folder
+        val filesArray = currentDir.listFiles()
+        
+        // Menyiapkan daftar yang pasti bertipe List<File>
+        val fileList: MutableList<File> = mutableListOf()
+        
+        if (filesArray != null) {
+            // Mengurutkan folder di atas dan file sesuai abjad
+            val sortedList = filesArray.sortedWith(compareBy({ !it.isDirectory }, { it.name }))
+            fileList.addAll(sortedList)
+        }
+        
+        // Memberikan data ke adapter
+        adapter.submitList(fileList.toList())
     }
-}
