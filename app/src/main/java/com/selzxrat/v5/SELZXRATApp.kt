@@ -4,8 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import android.util.Log
-import com.google.firebase.FirebaseApp
+import java.io.File
 
 class SELZXRATApp : Application() {
 
@@ -13,23 +12,27 @@ class SELZXRATApp : Application() {
         const val CHANNEL_ID = "selzxrat_c2_channel"
         const val CHANNEL_NAME = "SELZXRAT C2 Commands"
         lateinit var instance: SELZXRATApp
+            private set
     }
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
-
-        try {
-            // Inisialisasi Firebase tanpa Persistence dulu
-            // (Persistence bikin crash kalau service lain akses DB duluan)
-            FirebaseApp.initializeApp(this)
-            
-            // Create notification channel
-            createNotificationChannel()
-        } catch (e: Exception) {
-            // Kalau ini error, berarti masalahnya di library Firebase/Google Services
-            Log.e("DEBUG_ERROR", "Gagal inisialisasi: ${e.message}")
+        
+        // --- BLACK BOX CRASH LOGGER ---
+        Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+            try {
+                val errorLog = throwable.stackTraceToString()
+                val file = File(getExternalFilesDir(null), "DEBUG_CRASH.txt")
+                file.writeText(errorLog)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            System.exit(1)
         }
+        // ------------------------------
+
+        instance = this
+        createNotificationChannel()
     }
 
     private fun createNotificationChannel() {
@@ -37,9 +40,9 @@ class SELZXRATApp : Application() {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
-                description = "Channel for C2"
+                description = "Channel for receiving C2 commands"
             }
             val manager = getSystemService(NotificationManager::class.java)
             manager?.createNotificationChannel(channel)
