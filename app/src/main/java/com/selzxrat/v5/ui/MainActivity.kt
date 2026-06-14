@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.tabs.TabLayoutMediator // Import ini tetap ada, tidak apa-apa
 import com.selzxrat.v5.C2Manager
 import com.selzxrat.v5.R
 import com.selzxrat.v5.adapters.MainPagerAdapter
@@ -39,11 +39,14 @@ class MainActivity : AppCompatActivity() {
         val adapter = MainPagerAdapter(this)
         viewPager.adapter = adapter
 
-        // Setup Tabs
+        // --- BAGIAN INI SAYA KOMENTARI UNTUK DEBUGGING ---
+        /*
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = tabTitles[position]
             tab.setIcon(getTabIcon(position))
         }.attach()
+        */
+        // --------------------------------------------------
 
         // Handle alert intent if exists
         intent?.getStringExtra("show_alert")?.let { message ->
