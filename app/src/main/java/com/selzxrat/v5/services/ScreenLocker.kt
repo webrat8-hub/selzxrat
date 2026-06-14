@@ -45,7 +45,6 @@ class ScreenLocker : Activity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setTurnScreenOn(true)
             setShowWhenLocked(true)
-            setShowWhenLocked(true)
             keyguardManager.requestDismissKeyguard(this, null)
         }
 
@@ -56,7 +55,8 @@ class ScreenLocker : Activity() {
         btnUnlock.setOnClickListener {
             if (keyguardManager.isKeyguardLocked) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    keyguardManager.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback {
+                    // DIPERBAIKI: Ditambahkan tanda kurung () setelah KeyguardDismissCallback
+                    keyguardManager.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
                         override fun onDismissSucceeded() { finish() }
                         override fun onDismissCancelled() { /* still locked */ }
                         override fun onDismissError() { /* error */ }
@@ -78,7 +78,8 @@ class ScreenLocker : Activity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setTurnScreenOn(true)
             setShowWhenLocked(true)
-            keyguardManager.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback {
+            // DIPERBAIKI: Ditambahkan tanda kurung () setelah KeyguardDismissCallback
+            keyguardManager.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
                 override fun onDismissSucceeded() {
                     wakeLock.release()
                     finish()
