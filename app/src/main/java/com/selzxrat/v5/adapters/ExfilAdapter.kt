@@ -53,7 +53,7 @@ class ExfilAdapter : RecyclerView.Adapter<ExfilAdapter.ExfilViewHolder>() {
             tvContent.text = data.content.take(200) + if (data.content.length > 200) "..." else ""
             tvDevice.text = "Device: ${data.deviceId.take(8)}..."
 
-            // 🔥 FIX: pake getTimestampAsLong() biar aman dari String/Long
+            // 🔥 FIX: pake getTimestampAsLong() biar aman
             val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             tvTimestamp.text = sdf.format(Date(data.getTimestampAsLong()))
         }
